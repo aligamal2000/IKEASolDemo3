@@ -85,7 +85,7 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
             return Repository.Add(CreatedDepartment);
 
         }
-        public int UpdateDepartment(UpdatedDeparmentDto departmentDto)
+        public int UpdateDepartment(UpdatedDepartmentDto departmentDto)
         {
             var UpdatedDepartment = new Department()
             {

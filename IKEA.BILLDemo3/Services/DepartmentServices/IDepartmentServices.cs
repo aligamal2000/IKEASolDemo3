@@ -12,7 +12,7 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
         IEnumerable<DepartmentDto> GetAllDepartments();
         DepartmentDetailsDto GetDepartmentByid(int id);
         int CreateDepartment(DALDemo3.Models.Departments.CreatedDepartmentDto departmentDto);
-        int UpdateDepartment(UpdatedDeparmentDto departmentDto);
+        int UpdateDepartment(UpdatedDepartmentDto departmentDto);
         bool DeleteDepartment(int id);
     }
 }

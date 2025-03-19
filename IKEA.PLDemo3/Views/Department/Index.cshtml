@@ -37,18 +37,52 @@
                             </a>
                         </td>
                         <td>
-                            <a asp-controller="Department" asp-action="Update" asp-route-id="@dept.Id" class="btn btn-success">
+                            <a asp-controller="Department" asp-action="Edit" asp-route-id="@dept.Id" class="btn btn-success">
                                 Update
                                 <i class="fas fa-edit"></i>Update
                             </a>
                         </td>
                         <td>
-                            <a asp-controller="Department" asp-action="Delete" asp-route-id="@dept.Id" class="btn btn-danger">
+                        @*     <a asp-controller="Department" asp-action="Delete" asp-route-id="@dept.Id" class="btn btn-danger">
                                 Delete
                                 <i class="fas fa-trash"></i>Delete
-                            </a>
+                            </a> *@
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#DeleteDepartment">
+                            <i class="fas fa-trash"></i>Delete
+                        </button>
+
                         </td>
                     </tr>
+                <div class="modal fade" id="DeleteDepartment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title"fs-5 id="exampleModalLabel">Delete Department ?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                        
+                                <h6 class="modal-title" fs-5 id="exampleModalLabel">Are U sure to Delete @dept.Name Department ?</h6>
+
+                                ...
+                            </div>
+                            <div class="modal-footer">
+                                <form asp-action="Delete" asp-route-Deptid="@dept.Id" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="mt-4">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <input type="submit" value="Delete" class="btn btn-danger" />
+                                        <a asp-action="Index" class="btn btn-secondary">Back To List</a>
+                                    </div>
+                                </form>
+                  
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 }
             </tbody>
 
@@ -59,4 +93,5 @@
         <div class="alert alert-info mt-3">
             <h3>There is No Departments :(</h3>
         </div>
+
     }
