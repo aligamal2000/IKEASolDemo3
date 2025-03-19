@@ -1,3 +1,4 @@
+using IKEA.BILLDemo3.Services.DepartmentServices;
 using IKEA.DALDemo3.Persistance.Data;
 using IKEA.DALDemo3.Persistance.Repositories.Departments;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,9 @@ namespace IKEA.PLDemo3
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection"));
             });
+           
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped < IDepartmentServices, DepartmentServices>();
             //builder.Services.AddScoped<ApplictaonDbContext>();
             //builder.Services.AddScoped<DbContextOptions<ApplictaonDbContext>>((serivce)=>
             //{

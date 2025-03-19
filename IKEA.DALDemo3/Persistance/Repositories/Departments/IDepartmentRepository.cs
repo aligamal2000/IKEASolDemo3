@@ -13,5 +13,6 @@ namespace IKEA.DALDemo3.Persistance.Repositories.Departments
         Department ? GetById(int id);
         int Add(Department department);
         int Update(Department department);
+        int Delete(Department department);
     }
 }
