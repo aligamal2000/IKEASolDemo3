@@ -2,6 +2,7 @@ using IKEA.BILLDemo3.Services.DepartmentServices;
 using IKEA.BILLDemo3.Services.EmployeeServices;
 using IKEA.DALDemo3.Persistance.Data;
 using IKEA.DALDemo3.Persistance.Repositories.Departments;
+using IKEA.DALDemo3.Persistance.Repositories.Empoyees;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -23,6 +24,8 @@ namespace IKEA.PLDemo3
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentServices, DepartmentServices>();
             builder.Services.AddScoped<IEmpolyeeServices, EmployeeServices>();
+            builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>();
+
             //builder.Services.AddScoped<ApplictaonDbContext>();
             //builder.Services.AddScoped<DbContextOptions<ApplictaonDbContext>>((serivce)=>
             //{
