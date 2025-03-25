@@ -11,7 +11,7 @@ namespace IKEA.DALDemo3.Persistance.Repositories._Generic
 {
     public interface IGenericRepository< T> where T : ModelBase
     {
-        IEnumerable<T> GetAll(bool WithNoTracking = true);
+        IQueryable<T> GetAll(bool WithNoTracking = true);
         T? GetById(int id);
 
         int Add(T entity);

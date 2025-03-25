@@ -19,17 +19,27 @@ namespace IKEA.BILLDemo3.Services.EmployeeServices
         }
         public IEnumerable<EmployeeDto> GetAllEmployees()
         {
-           return repository.GetAll().Where(E=>E.IsDeleted==false).Select(E=> new EmployeeDto() 
-           { Id = E.Id,
+            var Employees = repository.GetAll();
+
+            var QueryEmployees = Employees
+       .Where(E => !E.IsDeleted)
+       .Select(E => new EmployeeDto()
+       {
+           Id = E.Id,
            Name = E.Name,
            Age = E.Age,
            Salary = E.Salary,
            IsActive = E.IsActive,
-           Email = E.Email ,
-           Gender = nameof(E.Gender),
-               EmployeeType = (E.EmployeeType),
-                                      }).ToList();
+           Email = E.Email,
+           Gender = E.Gender.ToString(),
+           EmployeeType = E.EmployeeType,
+       }).ToList();
+
+            var FirstEmployee = QueryEmployees.FirstOrDefault(); // Prevents exception
+            return QueryEmployees;
         }
+
+
         public EmployeeDetailsDto GetEmployeeById(int id)
         {
            var employee = repository.GetById(id);

@@ -1,5 +1,6 @@
 ﻿using IKEA.BILLDemo3.Dto_s.Departments;
 using IKEA.BILLDemo3.Services.DepartmentServices;
+using IKEA.PLDemo3.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
@@ -49,10 +50,11 @@ namespace IKEA.PLDemo3.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(CreatedDepartmentDto departmentDto1)
+  
+        public IActionResult Create(CreateEditDepartmentVM departmentVM)
         {
             if (!ModelState.IsValid)
-                return View(departmentDto1);
+                return View(departmentVM);
 
             var Message = string.Empty;
 
@@ -61,11 +63,20 @@ namespace IKEA.PLDemo3.Controllers
                 // Ensure proper mapping
                 var departmentModel = new IKEA.DALDemo3.Models.Departments.CreatedDepartmentDto
                 {
-                    Name = departmentDto1.Name,
-                    Code = departmentDto1.Code,
-                    Description = departmentDto1.Description,
-                    CreationDate = departmentDto1.CreationDate
+                    Name = departmentVM.Name,
+                    Code = departmentVM.Code,
+                    Description = departmentVM.Description,
+                    CreationDate = departmentVM.CreationDate
                 };
+                var departmentDto = new CreatedDepartmentDto()
+                {
+                    Name = departmentVM.Name,
+                    Code = departmentVM.Code,
+                    Description = departmentVM.Description,
+                    CreationDate = departmentVM.CreationDate,
+                        
+                };
+
 
                 var Result = departmentServices.CreateDepartment(departmentModel);
                 if (Result > 0)
@@ -73,57 +84,67 @@ namespace IKEA.PLDemo3.Controllers
 
                 Message = "Department is not Created";
                 ModelState.AddModelError(string.Empty, Message);
-                return View(departmentDto1);
+                return View(departmentVM);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, ex.Message);
                 Message = environment.IsDevelopment() ? ex.Message : "Error";
                 ModelState.AddModelError(string.Empty, Message);
-                return View(departmentDto1);
+                return View(departmentVM);
             }
         }
 
         #endregion
         #region Update
-        [HttpGet] //get: /Department/Edit/10
+        [HttpGet] // GET: /Department/Edit/10
+  
         public IActionResult Edit(int? id)
         {
             if (id is null)
                 return BadRequest();
 
-            var Department = departmentServices.GetDepartmentByid(id.Value);
+            var department = departmentServices.GetDepartmentByid(id.Value);
 
-            if (Department is null)
+            if (department is null)
                 return NotFound();
 
-            var MappedDepartment = new UpdatedDepartmentDto()
+            var mappedDepartment = new CreateEditDepartmentVM()
             {
-                Id = Department.Id,
-                Name = Department.Name,
-                Code = Department.Code,
-                Description = Department.Description,
-                CreationDate = Department.CreationDate,
+                Id = department.Id,
+                Name = department.Name,
+                Code = department.Code,
+                Description = department.Description,
+                CreationDate = department.CreationDate,
             };
 
-            return View(Department);
-
-
-
-
-
+            return View(mappedDepartment); // Ensure the view receives UpdatedDepartmentDto
         }
+
+
+
+
+
+        
         [HttpPost]
-        public IActionResult Edit(UpdatedDepartmentDto departmentDto)
+
+        public IActionResult Edit(CreateEditDepartmentVM departmentVM)
         {
             if (!ModelState.IsValid)
-                return View(departmentDto);
+                return View(departmentVM);
 
             var Message = String.Empty;
             try
             {
               
-                var Result = departmentServices.UpdateDepartment(departmentDto);
+                var deparmentDto = new UpdatedDepartmentDto()
+                {
+                    Name = departmentVM.Name,
+                    Code = departmentVM.Code,
+                    Description = departmentVM.Description,
+                    CreationDate = departmentVM.CreationDate,
+                };
+                var Result = departmentServices.UpdateDepartment(deparmentDto);
                 if (Result > 0)
                     return RedirectToAction(nameof(Index));
                 else
@@ -136,7 +157,7 @@ namespace IKEA.PLDemo3.Controllers
                 Message = environment.IsDevelopment() ? ex.Message : "an error during update department";
             }
             ModelState.AddModelError(string.Empty, Message);
-            return View(departmentDto);
+            return View(departmentVM);
         }
         #endregion
         #region Delete
@@ -154,6 +175,7 @@ namespace IKEA.PLDemo3.Controllers
             return View(Department);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int Deptid)
         {
             var Message = string.Empty;

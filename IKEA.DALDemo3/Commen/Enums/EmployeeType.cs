@@ -10,5 +10,7 @@ namespace IKEA.DALDemo3.Commen.Enums
     {
         PartTime=1,
         FullTime =2,
+        Remote =3,
+        Internship=4,
     }
 }

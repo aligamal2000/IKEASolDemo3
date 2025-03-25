@@ -21,12 +21,12 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
 
         public IEnumerable<DepartmentDto> GetAllDepartments()
         {
-            var Departments = Repository.GetAll().Select(dept => new DepartmentDto()
+            var Departments = Repository.GetAll().Where(D => !D.IsDeleted).Select(dept => new DepartmentDto()
             {
                 Id = dept.Id,
                 Name = dept.Name,
                 Code = dept.Code,
-                CreationDate = dept.CreationDate,
+                CreationDate = dept.CreationDate,   
 
             }).ToList();
             return Departments;
