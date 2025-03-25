@@ -8,7 +8,7 @@ using IKEA.DALDemo3.Persistance.Repositories._Generic;
 
 namespace IKEA.DALDemo3.Persistance.Repositories.Departments
 {
-    public interface IDepartmentRepository:IGenericRepository<Department>
+    public interface IDepartmentRepository:IGenericRepository<Departmentt>
     {
 
     }

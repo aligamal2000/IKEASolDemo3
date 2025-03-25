@@ -4,6 +4,7 @@ using IKEA.DALDemo3.Persistance.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IKEA.DALDemo3.Persistance.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplictaonDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328012105_EmployeeDepartmentRelationShip")]
+    partial class EmployeeDepartmentRelationShip
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace IKEA.DALDemo3.Persistance.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("IKEA.DALDemo3.Models.Departments.Departmentt", b =>
+            modelBuilder.Entity("IKEA.DALDemo3.Models.Departments.Department", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +93,7 @@ namespace IKEA.DALDemo3.Persistance.Data.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GetDate()");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -140,15 +143,16 @@ namespace IKEA.DALDemo3.Persistance.Data.Migrations
 
             modelBuilder.Entity("IKEA.DALDemo3.Models.Empolyees.Employeee", b =>
                 {
-                    b.HasOne("IKEA.DALDemo3.Models.Departments.Departmentt", "Department")
+                    b.HasOne("IKEA.DALDemo3.Models.Departments.Department", "Department")
                         .WithMany("Employees")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("Department");
                 });
 
-            modelBuilder.Entity("IKEA.DALDemo3.Models.Departments.Departmentt", b =>
+            modelBuilder.Entity("IKEA.DALDemo3.Models.Departments.Department", b =>
                 {
                     b.Navigation("Employees");
                 });

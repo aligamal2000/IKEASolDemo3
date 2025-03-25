@@ -5,28 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 using IKEA.BILLDemo3.Dto_s.Departments;
 using IKEA.DALDemo3.Models.Departments;
+using IKEA.DALDemo3.Models.Empolyees;
 using IKEA.DALDemo3.Persistance.Repositories.Departments;
+using IKEA.DALDemo3.Persistance.UnitOfWork;
 
 namespace IKEA.BILLDemo3.Services.DepartmentServices
 {
     public class DepartmentServices : IDepartmentServices
     {
-        private IDepartmentRepository Repository;
-        public DepartmentServices(IDepartmentRepository _repository)
-        {
-            Repository = _repository;
-            Repository = _repository;
+        private readonly IUnitOfWork unitOfWork;
 
+        public DepartmentServices(IUnitOfWork unitOfWork)
+        {
+            unitOfWork = unitOfWork;
         }
 
         public IEnumerable<DepartmentDto> GetAllDepartments()
         {
-            var Departments = Repository.GetAll().Select(dept => new DepartmentDto()
+            var Departments = unitOfWork.DepartmentRepository.GetAll().Where(D => !D.IsDeleted).Select(dept => new DepartmentDto()
             {
                 Id = dept.Id,
                 Name = dept.Name,
                 Code = dept.Code,
-                CreationDate = dept.CreationDate,
+                CreationDate = dept.CreationDate,   
 
             }).ToList();
             return Departments;
@@ -48,7 +49,7 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
     
   public DepartmentDetailsDto? GetDepartmentByid(int id)
         {
-            var Department = Repository.GetById(id);
+            var Department = unitOfWork.DepartmentRepository.GetById(id);
 
             if (Department is not null)
                 return new DepartmentDetailsDto()
@@ -70,7 +71,7 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
 
         public int CreateDepartment(DALDemo3.Models.Departments.CreatedDepartmentDto departmentDto)
         {
-            var CreatedDepartment = new Department()
+            var CreatedDepartment = new Departmentt()
             {
                 Code = departmentDto.Code,
                 Name = departmentDto.Name,
@@ -82,12 +83,13 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
                 LastModifiedOn = DateTime.Now
             };
 
-            return Repository.Add(CreatedDepartment);
+             unitOfWork.DepartmentRepository.Add(CreatedDepartment);
+            return unitOfWork.Complete();
 
         }
         public int UpdateDepartment(UpdatedDepartmentDto departmentDto)
         {
-            var UpdatedDepartment = new Department()
+            var UpdatedDepartment = new Departmentt()
             {
                 Id = departmentDto.Id,
                 Code = departmentDto.Code,
@@ -98,18 +100,21 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
                 LastModifiedOn = DateTime.Now,
             };
 
-            return Repository.Update(UpdatedDepartment);
-
+            unitOfWork.DepartmentRepository.Update(UpdatedDepartment);
+            return unitOfWork.Complete();
         }
 
         public bool DeleteDepartment(int id)
         {
-            var department = Repository.GetById(id);
-
+            var department = unitOfWork.DepartmentRepository.GetById(id);
             if (department is not null)
-                return Repository.Delete(department) > 0;
+            unitOfWork.DepartmentRepository.Delete(department);
+            var result = unitOfWork.Complete();
+            if (result > 0)
+                return true;
             else
                 return false;
+
 
         }
     }

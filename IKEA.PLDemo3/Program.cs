@@ -3,6 +3,8 @@ using IKEA.BILLDemo3.Services.EmployeeServices;
 using IKEA.DALDemo3.Persistance.Data;
 using IKEA.DALDemo3.Persistance.Repositories.Departments;
 using IKEA.DALDemo3.Persistance.Repositories.Empoyees;
+using IKEA.DALDemo3.Persistance.UnitOfWork;
+using IKEA.PLDemo3.Mapping;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -17,16 +19,17 @@ namespace IKEA.PLDemo3
             // Add services to the container.
             #region Configure Services
             builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<ApplictaonDbContext>(options =>
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection"));
+                options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("DefualtConnection"));
             });
-            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            //builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentServices, DepartmentServices>();
             builder.Services.AddScoped<IEmpolyeeServices, EmployeeServices>();
-            builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>();
-
+            //builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>();
+            builder.Services.AddAutoMapper(M => M.AddProfile(typeof(MappingProfile)));
             //builder.Services.AddScoped<ApplictaonDbContext>();
+             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             //builder.Services.AddScoped<DbContextOptions<ApplictaonDbContext>>((serivce)=>
             //{
             //    var optionBuilder = new DbContextOptionsBuilder<ApplictaonDbContext>();

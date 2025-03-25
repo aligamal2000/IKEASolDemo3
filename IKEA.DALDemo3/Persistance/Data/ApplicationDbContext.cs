@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.DALDemo3.Persistance.Data
 {
-    public class ApplictaonDbContext:DbContext
+    public class ApplicationDbContext:DbContext
     {
-        public ApplictaonDbContext(DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions options) : base(options)
         {
         }
 
@@ -28,7 +28,7 @@ namespace IKEA.DALDemo3.Persistance.Data
         {
           modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Departmentt> Departments { get; set; }
+        public DbSet<Employeee> Employees { get; set; }
     }
 }

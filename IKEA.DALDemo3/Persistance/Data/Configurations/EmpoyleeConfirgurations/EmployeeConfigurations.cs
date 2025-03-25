@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace IKEA.DALDemo3.Persistance.Data.Configurations.EmpoyleeConfirgurations
 {
-    public class EmployeeConfigurations : IEntityTypeConfiguration<Employee>
+    public class EmployeeConfigurations : IEntityTypeConfiguration<Employeee>
     {
-        public void Configure(EntityTypeBuilder<Employee> builder)
+        public void Configure(EntityTypeBuilder<Employeee> builder)
         {
             builder.Property(E => E.Name).HasColumnType("varchar(50)").IsRequired();
 

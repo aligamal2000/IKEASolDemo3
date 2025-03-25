@@ -12,18 +12,18 @@ namespace IKEA.DALDemo3.Persistance.Repositories._Generic
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : ModelBase
     {
-        public ApplictaonDbContext? context { get; set; }
-        private readonly ApplictaonDbContext dbContext;
-        public GenericRepository(ApplictaonDbContext context)
+        public ApplicationDbContext? context { get; set; }
+        private readonly ApplicationDbContext dbContext;
+        public GenericRepository(ApplicationDbContext context)
         {
             dbContext = context;
             //context - new ApplictaonDbContext
         }
-        public IEnumerable<T> GetAll(bool WithNoTracking = true)
+        public IQueryable<T> GetAll(bool WithNoTracking = true)
         {
             if (WithNoTracking)
-                return dbContext.Set<T>().Where(D => D.IsDeleted == false).AsNoTracking().ToList();
-            return dbContext.Set<T>().Where(D => D.IsDeleted == false).ToList();
+                return dbContext.Set<T>().AsNoTracking();
+            return dbContext.Set<T>();
         }
         public T? GetById(int id)
         {
@@ -35,22 +35,19 @@ namespace IKEA.DALDemo3.Persistance.Repositories._Generic
         }
 
 
-        public int Add(T item)
+        public void Add(T item)
         {
             dbContext.Set<T>().Add(item);
-            return dbContext.SaveChanges();
         }
-        public int Update(T item)
+        public void Update(T item)
         {
             dbContext.Update(item);
-            return dbContext.SaveChanges();
         }
 
-        public int Delete(T item)
+        public void Delete(T item)
         {
             item.IsDeleted = true;
             dbContext.Set<T>().Update(item);
-            return dbContext.SaveChanges();
         }
     }
 }

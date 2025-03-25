@@ -9,7 +9,7 @@ using IKEA.DALDemo3.Persistance.Repositories._Generic;
 
 namespace IKEA.DALDemo3.Persistance.Repositories.Empoyees
 {
-    public interface IEmployeeRepository:IGenericRepository<Employee>
+    public interface IEmployeeRepository:IGenericRepository<Employeee>
     {
      
     }

@@ -10,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.DALDemo3.Persistance.Repositories.Departments
 {
-    public class DepartmentRepository :GenericRepository<Department>, IDepartmentRepository
+    public class DepartmentRepository :GenericRepository<Departmentt>, IDepartmentRepository
     {
-        public ApplictaonDbContext? context { get; set; }
-        private readonly ApplictaonDbContext dbContext;
-        public DepartmentRepository(ApplictaonDbContext context):base(context)
+        public ApplicationDbContext? context { get; set; }
+        private readonly ApplicationDbContext dbContext;
+        public DepartmentRepository(ApplicationDbContext context):base(context)
         {
             dbContext = context;
             //context - new ApplictaonDbContext

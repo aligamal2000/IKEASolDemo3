@@ -6,33 +6,47 @@ using System.Threading.Tasks;
 using IKEA.BILLDemo3.Dto_s.Employees;
 using IKEA.DALDemo3.Models.Empolyees;
 using IKEA.DALDemo3.Persistance.Repositories.Empoyees;
+using IKEA.DALDemo3.Persistance.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.BILLDemo3.Services.EmployeeServices
 {
     public class EmployeeServices:IEmpolyeeServices
     {
         private readonly IEmployeeRepository repository;
+        private readonly IUnitOfWork unitOfWork;
 
-        public EmployeeServices(IEmployeeRepository employeeRepository)
+        public EmployeeServices(IUnitOfWork unitOfWork)
         {
-            repository = employeeRepository;
+            this.unitOfWork = unitOfWork;
         }
-        public IEnumerable<EmployeeDto> GetAllEmployees()
+        public IEnumerable<EmployeeDto> GetAllEmployees(string search)
         {
-           return repository.GetAll().Where(E=>E.IsDeleted==false).Select(E=> new EmployeeDto() 
-           { Id = E.Id,
+            var Employees = unitOfWork.EmployeeRepository.GetAll();
+
+            var QueryEmployees = Employees
+       .Where(E => !E.IsDeleted &&(string.IsNullOrEmpty(search)||E.Name.ToLower().Contains(search.ToLower()))).Include(E=>E.Department)
+       .Select(E => new EmployeeDto()
+       {
+           Id = E.Id,
            Name = E.Name,
            Age = E.Age,
            Salary = E.Salary,
            IsActive = E.IsActive,
-           Email = E.Email ,
-           Gender = nameof(E.Gender),
-               EmployeeType = (E.EmployeeType),
-                                      }).ToList();
+           Email = E.Email,
+           Gender = E.Gender.ToString(),
+           EmployeeType = E.EmployeeType,
+           Department = E.Department.Name ?? "N/A"
+       }).ToList();
+
+            var FirstEmployee = QueryEmployees.FirstOrDefault(); // Prevents exception
+            return QueryEmployees;
         }
+
+
         public EmployeeDetailsDto GetEmployeeById(int id)
         {
-           var employee = repository.GetById(id);
+           var employee = unitOfWork.EmployeeRepository.GetById(id);
             if (employee is not null)
             {
                 return new EmployeeDetailsDto()
@@ -48,17 +62,20 @@ namespace IKEA.BILLDemo3.Services.EmployeeServices
                     HiringDate = employee.HiringDate,
                     Gender = employee.Gender,
                     EmployeeType = employee.EmployeeType,
+                    DepartmentId = employee.DepartmentId,
                     LastModifiedBy = employee.LastModifiedBy,
                     CreatedBy = employee.CreatedBy,
                     LastModifiedOn = employee.LastModifiedOn, 
                     CreatedOn = employee.CreatedOn,
+                    Department = employee.Department.Name ?? "N/A"
+
                 };
             }
             return new EmployeeDetailsDto();
         }
         public int CreateEmployee(CreatedEmployeeDto employeeDto)
         {
-            var employee = new Employee()
+            var employee = new Employeee()
             {
                 Name = employeeDto.Name,
                 Age = employeeDto.Age,
@@ -75,11 +92,12 @@ namespace IKEA.BILLDemo3.Services.EmployeeServices
                 LastModifiedOn = DateTime.Now,
                 CreatedOn = DateTime.Now,
             };
-            return repository.Add(employee);
+            unitOfWork.EmployeeRepository.Add(employee);
+            return unitOfWork.Complete();
         }
         public int UpdateEmployee(UpdatedEmployeeDto employeeDto)
         {
-            var employee = new Employee()
+            var employee = new Employeee()
             {
                 Id = employeeDto.Id,
                 Name = employeeDto.Name,
@@ -97,16 +115,21 @@ namespace IKEA.BILLDemo3.Services.EmployeeServices
                 LastModifiedOn = DateTime.Now,
    
             };
-            return repository.Update(employee);
+            unitOfWork.EmployeeRepository.Update(employee);
+            return unitOfWork.Complete();
         }
         public bool DeleteEmployee(int id)
         {
-            var employee = repository.GetById(id);
+            var employee = unitOfWork.EmployeeRepository.GetById(id);
 
             if (employee is not null)
-                return repository.Delete(employee) > 0;
-            else
+                 unitOfWork.EmployeeRepository.Delete(employee);
+            var result = unitOfWork.Complete();
+            if(result>0)
+                return true;
+                else
                 return false;
+
         }
 
 

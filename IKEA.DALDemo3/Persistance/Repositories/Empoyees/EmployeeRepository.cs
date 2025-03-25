@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.DALDemo3.Persistance.Repositories.Empoyees
 {
-    public class EmployeeRepository :GenericRepository<Employee> ,IEmployeeRepository
+    public class EmployeeRepository :GenericRepository<Employeee> ,IEmployeeRepository
     {
-        public ApplictaonDbContext? context { get; set; }
-        private readonly ApplictaonDbContext dbContext;
-        public EmployeeRepository(ApplictaonDbContext context) : base(context)
+        public ApplicationDbContext? context { get; set; }
+        private readonly ApplicationDbContext dbContext;
+        public EmployeeRepository(ApplicationDbContext context) : base(context)
         {
             dbContext = context;
             //context - new ApplictaonDbContext

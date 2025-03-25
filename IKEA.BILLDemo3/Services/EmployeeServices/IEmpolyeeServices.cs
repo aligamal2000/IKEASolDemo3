@@ -10,7 +10,7 @@ namespace IKEA.BILLDemo3.Services.EmployeeServices
 {
     public interface IEmpolyeeServices
     {
-        IEnumerable<EmployeeDto> GetAllEmployees();
+        IEnumerable<EmployeeDto> GetAllEmployees(string search);
         EmployeeDetailsDto GetEmployeeById(int id);
         int CreateEmployee(CreatedEmployeeDto employeeDto);
         int UpdateEmployee(UpdatedEmployeeDto employeeDto);

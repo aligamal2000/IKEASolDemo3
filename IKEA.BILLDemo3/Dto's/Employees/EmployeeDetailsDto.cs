@@ -20,12 +20,15 @@ namespace IKEA.BILLDemo3.Dto_s.Employees
         public DateOnly HiringDate { get; set; }
         public Gender Gender { get; set; }
         public EmployeeType EmployeeType { get; set; }
+        public string? Department { get; set; }
+
         #region Administration
 
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public int LastModifiedBy { get; set; }
         public DateTime LastModifiedOn { get; set; }
+        public int? DepartmentId { get; internal set; }
 
         #endregion
 
