@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IKEA.BILLDemo3.Dto_s.Departments;
 using IKEA.DALDemo3.Models.Departments;
-using IKEA.DALDemo3.Models.Empolyees;
-using IKEA.DALDemo3.Persistance.Repositories.Departments;
 using IKEA.DALDemo3.Persistance.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.BILLDemo3.Services.DepartmentServices
 {
@@ -17,61 +14,57 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
 
         public DepartmentServices(IUnitOfWork unitOfWork)
         {
-            unitOfWork = unitOfWork;
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public IEnumerable<DepartmentDto> GetAllDepartments()
+        public async Task<IEnumerable<DepartmentDto>> GetAllDepartments()
         {
-            var Departments = unitOfWork.DepartmentRepository.GetAll().Where(D => !D.IsDeleted).Select(dept => new DepartmentDto()
-            {
-                Id = dept.Id,
-                Name = dept.Name,
-                Code = dept.Code,
-                CreationDate = dept.CreationDate,   
+            if ( unitOfWork.DepartmentRepository == null)
+                throw new InvalidOperationException("DepartmentRepository is not initialized.");
 
-            }).ToList();
-            return Departments;
-            //List<DepartmentDto>departmentDtos = new List<DepartmentDto>();
-            //foreach (var dept in Deparments)
-            //{
-            //   DepartmentDto departmentDto = new DepartmentDto()
-            //   { 
-            //        Id= dept.Id,
-            //       Name = dept.Name,
-            //       Code = dept.Code,
-            //       CreationDate = dept.CreationDate,
+            var departments =    unitOfWork.DepartmentRepository.GetAll();
 
+            if (departments == null)
+                throw new InvalidOperationException("DepartmentRepository.GetAll() returned null.");
 
-            //   };
-            //    departmentDtos.Add(departmentDto);
-
-        }
-    
-  public DepartmentDetailsDto? GetDepartmentByid(int id)
-        {
-            var Department = unitOfWork.DepartmentRepository.GetById(id);
-
-            if (Department is not null)
-                return new DepartmentDetailsDto()
+            var departmentDtos =  await departments
+                .Where(d => d != null && !d.IsDeleted)
+                .Select(dept => new DepartmentDto
                 {
-                    Id = Department.Id,
-                    Name = Department.Name,
-                    Code = Department.Code,
-                    CreationDate = Department.CreationDate,
-                    IsDeleted = Department.IsDeleted,
-                    LastModifiedBy = Department.LastModifiedBy,
-                    LastModifiedOn = Department.LastModifiedOn,
-                    CreatedBy = Department.CreatedBy,
-                    CreatedOn = Department.CreatedOn,
-                };
-            return null;
+                    Id = dept.Id,
+                    Name = dept.Name,
+                    Code = dept.Code,
+                    CreationDate = dept.CreationDate
+                })
+                .ToListAsync();
 
+            return departmentDtos;
         }
 
-
-        public int CreateDepartment(DALDemo3.Models.Departments.CreatedDepartmentDto departmentDto)
+        public async Task <DepartmentDetailsDto>? GetDepartmentByid(int id)
         {
-            var CreatedDepartment = new Departmentt()
+            var department = await unitOfWork.DepartmentRepository.GetById(id);
+
+            if (department is not null)
+                return new DepartmentDetailsDto
+                {
+                    Id = department.Id,
+                    Name = department.Name,
+                    Code = department.Code,
+                    CreationDate = department.CreationDate,
+                    IsDeleted = department.IsDeleted,
+                    LastModifiedBy = department.LastModifiedBy,
+                    LastModifiedOn = department.LastModifiedOn,
+                    CreatedBy = department.CreatedBy,
+                    CreatedOn = department.CreatedOn,
+                };
+
+            return null;
+        }
+
+        public async  Task<int> CreateDepartment(DALDemo3.Models.Departments.CreatedDepartmentDto departmentDto)
+        {
+            var createdDepartment = new Departmentt
             {
                 Code = departmentDto.Code,
                 Name = departmentDto.Name,
@@ -83,13 +76,13 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
                 LastModifiedOn = DateTime.Now
             };
 
-             unitOfWork.DepartmentRepository.Add(CreatedDepartment);
-            return unitOfWork.Complete();
-
+            unitOfWork.DepartmentRepository.Add(createdDepartment);
+            return  await unitOfWork.Complete();
         }
-        public int UpdateDepartment(UpdatedDepartmentDto departmentDto)
+
+        public async  Task<int> UpdateDepartment(UpdatedDepartmentDto departmentDto)
         {
-            var UpdatedDepartment = new Departmentt()
+            var updatedDepartment = new Departmentt
             {
                 Id = departmentDto.Id,
                 Code = departmentDto.Code,
@@ -100,23 +93,21 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
                 LastModifiedOn = DateTime.Now,
             };
 
-            unitOfWork.DepartmentRepository.Update(UpdatedDepartment);
-            return unitOfWork.Complete();
+            unitOfWork.DepartmentRepository.Update(updatedDepartment);
+            return  await unitOfWork.Complete();
         }
 
-        public bool DeleteDepartment(int id)
+        public async Task <bool> DeleteDepartment(int id)
         {
-            var department = unitOfWork.DepartmentRepository.GetById(id);
-            if (department is not null)
-            unitOfWork.DepartmentRepository.Delete(department);
-            var result = unitOfWork.Complete();
-            if (result > 0)
-                return true;
-            else
-                return false;
+            var department = await unitOfWork.DepartmentRepository.GetById(id);
+            if (department != null)
+            {
+                unitOfWork.DepartmentRepository.Delete(department);
+                var result = await unitOfWork.Complete();
+                return  result > 0;
+            }
 
-
+            return false;
         }
     }
 }
-

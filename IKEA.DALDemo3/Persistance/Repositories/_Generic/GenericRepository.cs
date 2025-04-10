@@ -25,9 +25,9 @@ namespace IKEA.DALDemo3.Persistance.Repositories._Generic
                 return dbContext.Set<T>().AsNoTracking();
             return dbContext.Set<T>();
         }
-        public T? GetById(int id)
+        public async Task<T>? GetById(int id)
         {
-            var item = dbContext.Set<T>().Find(id);
+            var item = await dbContext.Set<T>().FindAsync(id);
             //var Department = dbContext.Departments.Local.FirstOrDefault(D=>D.Id == id);
             //if(Department == null)
             //    Department = dbContext.Departments.FirstOrDefault(D=>D.Id == id);

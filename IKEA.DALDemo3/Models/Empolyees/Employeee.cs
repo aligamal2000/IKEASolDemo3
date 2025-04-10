@@ -24,6 +24,6 @@ namespace IKEA.DALDemo3.Models.Empolyees
         public int? DepartmentId { get; set; } // Make this nullable
         public virtual Departmentt? Department { get; set; }
 
-
+        public string? ImageName { get; set; }
     }
 }

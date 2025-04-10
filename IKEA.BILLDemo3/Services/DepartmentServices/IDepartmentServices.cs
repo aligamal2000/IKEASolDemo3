@@ -9,10 +9,10 @@ namespace IKEA.BILLDemo3.Services.DepartmentServices
     public interface IDepartmentServices
     {
         //services
-        IEnumerable<DepartmentDto> GetAllDepartments();
-        DepartmentDetailsDto GetDepartmentByid(int id);
-        int CreateDepartment(DALDemo3.Models.Departments.CreatedDepartmentDto departmentDto);
-        int UpdateDepartment(UpdatedDepartmentDto departmentDto);
-        bool DeleteDepartment(int id);
+        Task <IEnumerable<DepartmentDto>> GetAllDepartments();
+      Task  <DepartmentDetailsDto> GetDepartmentByid(int id);
+        Task<int> CreateDepartment(DALDemo3.Models.Departments.CreatedDepartmentDto departmentDto);
+        Task<int> UpdateDepartment(UpdatedDepartmentDto departmentDto);
+        Task<bool> DeleteDepartment(int id);
     }
 }

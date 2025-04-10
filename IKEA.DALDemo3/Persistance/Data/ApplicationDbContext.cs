@@ -7,11 +7,14 @@ using System.Threading.Tasks;
 using IKEA.DALDemo3.Commen.Enums;
 using IKEA.DALDemo3.Models.Departments;
 using IKEA.DALDemo3.Models.Empolyees;
+using IKEA.DALDemo3.Models.identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IKEA.DALDemo3.Persistance.Data
 {
-    public class ApplicationDbContext:DbContext
+    public class ApplicationDbContext:IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -26,6 +29,7 @@ namespace IKEA.DALDemo3.Persistance.Data
         //}
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
           modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
         public DbSet<Departmentt> Departments { get; set; }

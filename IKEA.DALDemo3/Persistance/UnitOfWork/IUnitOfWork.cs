@@ -13,7 +13,7 @@ namespace IKEA.DALDemo3.Persistance.UnitOfWork
     {
         public IDepartmentRepository DepartmentRepository { get; }
         public IEmployeeRepository EmployeeRepository { get;  }
-        int Complete();
+        public Task<int> Complete();
         
         
          void Dispose();

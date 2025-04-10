@@ -2,12 +2,14 @@
 using IKEA.BILLDemo3.Dto_s.Departments;
 using IKEA.BILLDemo3.Services.DepartmentServices;
 using IKEA.PLDemo3.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 
 namespace IKEA.PLDemo3.Controllers
 {
+    [Authorize]
     public class DepartmentController : Controller
     {
 
@@ -28,23 +30,19 @@ namespace IKEA.PLDemo3.Controllers
         #endregion
         #region Index
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var Departments = departmentServices.GetAllDepartments();
-            //ViewData["Message"] = "Hello From ViewData";
-            //ViewBag.Message = "Helllo From ViewBag";
-            //string Name = ViewBag.Message;
-            //ViewBag.Message = 1;
+            var Departments = await departmentServices.GetAllDepartments(); // <--- line 31
             return View(Departments);
         }
 
         #endregion
         #region Details
-        public IActionResult Details(int? id)
+        public async    Task<IActionResult> Details(int? id)
         {
             if (id == null)
                 return BadRequest();
-            var department = departmentServices.GetDepartmentByid(id.Value);
+            var department = await departmentServices.GetDepartmentByid(id.Value);
             if (department == null)
                 return NotFound();
             return View(department);
@@ -59,7 +57,7 @@ namespace IKEA.PLDemo3.Controllers
         }
         [HttpPost]
   
-        public IActionResult Create(CreateEditDepartmentVM departmentVM)
+        public async Task<IActionResult> Create(CreateEditDepartmentVM departmentVM)
         {
             if (!ModelState.IsValid)
                 return View(departmentVM);
@@ -89,7 +87,7 @@ namespace IKEA.PLDemo3.Controllers
                 //};
 
 
-                var Result = departmentServices.CreateDepartment(departmentModel);
+                var Result = await departmentServices.CreateDepartment(departmentModel);
                 if (Result > 0)
                     TempData["Message"] = $"{departmentDto.Name}Department Is Created";
                     return RedirectToAction(nameof(Index));
@@ -111,12 +109,12 @@ namespace IKEA.PLDemo3.Controllers
         #region Update
         [HttpGet] // GET: /Department/Edit/10
   
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id is null)
                 return BadRequest();
 
-            var department = departmentServices.GetDepartmentByid(id.Value);
+            var department = await departmentServices.GetDepartmentByid(id.Value);
 
             if (department is null)
                 return NotFound();
@@ -143,7 +141,7 @@ namespace IKEA.PLDemo3.Controllers
         
         [HttpPost]
 
-        public IActionResult Edit(CreateEditDepartmentVM departmentVM)
+        public async Task<IActionResult> Edit(CreateEditDepartmentVM departmentVM)
         {
             if (!ModelState.IsValid)
                 return View(departmentVM);
@@ -159,7 +157,7 @@ namespace IKEA.PLDemo3.Controllers
                 //    Description = departmentVM.Description,
                 //    CreationDate = departmentVM.CreationDate,
                 //};
-                var Result = departmentServices.UpdateDepartment(deparmentDto);
+                var Result = await departmentServices.UpdateDepartment(deparmentDto);
                 if (Result > 0)
                     return RedirectToAction(nameof(Index));
                 else
@@ -177,12 +175,12 @@ namespace IKEA.PLDemo3.Controllers
         #endregion
         #region Delete
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id is null)
                 return BadRequest();
 
-            var Department = departmentServices.GetDepartmentByid(id.Value);
+            var Department = await departmentServices.GetDepartmentByid(id.Value);
 
             if (Department is null)
                 return NotFound();
@@ -191,12 +189,12 @@ namespace IKEA.PLDemo3.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int Deptid)
+        public async Task<IActionResult> Delete(int Deptid)
         {
             var Message = string.Empty;
             try
             {
-                var IsDeleted = departmentServices.DeleteDepartment(Deptid);
+                var IsDeleted =    await departmentServices.DeleteDepartment(Deptid);
 
                 if (IsDeleted)
                     return RedirectToAction(nameof(Index));

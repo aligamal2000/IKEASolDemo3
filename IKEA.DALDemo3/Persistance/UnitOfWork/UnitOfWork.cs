@@ -21,9 +21,9 @@ namespace IKEA.DALDemo3.Persistance.UnitOfWork
             DepartmentRepository = new DepartmentRepository(this.dbContext);
             EmployeeRepository = new EmployeeRepository(this.dbContext);   
         }
-        public int Complete()
+        public async Task<int> Complete()
         {
-            return dbContext.SaveChanges();
+            return await dbContext.SaveChangesAsync();
         }
 
         public void Dispose()

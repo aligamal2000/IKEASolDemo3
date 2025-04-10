@@ -29,6 +29,7 @@ namespace IKEA.BILLDemo3.Dto_s.Employees
         public int LastModifiedBy { get; set; }
         public DateTime LastModifiedOn { get; set; }
         public int? DepartmentId { get; internal set; }
+        public string? ImageName { get; set; }
 
         #endregion
 

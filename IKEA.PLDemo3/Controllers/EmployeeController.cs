@@ -1,102 +1,87 @@
-﻿using IKEA.BILLDemo3.Dto_s.Departments;
-using IKEA.BILLDemo3.Dto_s.Employees;
+﻿using IKEA.BILLDemo3.Dto_s.Employees;
 using IKEA.BILLDemo3.Services.DepartmentServices;
 using IKEA.BILLDemo3.Services.EmployeeServices;
-using IKEA.DALDemo3.Models.Empolyees;
-using IKEA.DALDemo3.Persistance.Data.Migrations;
-using IKEA.DALDemo3.Persistance.Repositories.Empoyees;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IKEA.PLDemo3.Controllers
 {
+    [Authorize]
+
     public class EmployeeController : Controller
     {
-        #region Services D1
-        private readonly IEmpolyeeServices employeeServices;
+        private readonly IEmployeeServices employeeServices;
         private readonly ILogger<EmployeeController> logger;
         private readonly IWebHostEnvironment environment;
 
-
-        public EmployeeController(IEmpolyeeServices employeeServices,IDepartmentServices departmentServices, ILogger<EmployeeController> logger, IWebHostEnvironment environment)
+        public EmployeeController(IEmployeeServices employeeServices, IDepartmentServices departmentServices, ILogger<EmployeeController> logger, IWebHostEnvironment environment)
         {
             this.employeeServices = employeeServices;
             this.logger = logger;
             this.environment = environment;
         }
-        #endregion
 
-        #region Index
         [HttpGet]
-
-        public IActionResult Index(string search)
+        public async Task <IActionResult> Index(string search)
         {
-            var Empployees = employeeServices.GetAllEmployees( search);
-
-            return View(Empployees);
+            var employees = await employeeServices.GetAllEmployees(search);
+            return View(employees);
         }
-        #endregion
-        #region Create
+
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
+
         [HttpPost]
-        public IActionResult Create(CreatedEmployeeDto employeeDto)
+        public async Task<IActionResult> Create(CreatedEmployeeDto employeeDto)
         {
             if (!ModelState.IsValid)
                 return View(employeeDto);
 
-            var Message = string.Empty;
-
             try
             {
-
-
-                var Result = employeeServices.CreateEmployee(employeeDto);
-                if (Result > 0)
+                var result = await employeeServices.CreateEmployee(employeeDto);
+                if (result > 0)
                     return RedirectToAction(nameof(Index));
 
-                Message = "Department is not Created";
-                ModelState.AddModelError(string.Empty, Message);
+                ModelState.AddModelError(string.Empty, "Employee is not created");
                 return View(employeeDto);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, ex.Message);
-                Message = environment.IsDevelopment() ? ex.Message : "Error";
-                ModelState.AddModelError(string.Empty, Message);
+                ModelState.AddModelError(string.Empty, environment.IsDevelopment() ? ex.Message : "An error occurred");
                 return View(employeeDto);
             }
         }
 
-        #endregion
-        #region Details
-        public IActionResult Details(int? id)
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
                 return BadRequest();
-            var employee = employeeServices.GetEmployeeById(id.Value);
+
+            var employee = await employeeServices.GetEmployeeById(id.Value);
             if (employee == null)
                 return NotFound();
+
             return View(employee);
         }
 
-        #endregion
-
-        #region Edit
         [HttpGet]
-        public IActionResult Edit(int? id)
+        [Authorize(Roles ="Employee")]
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id is null)
+            if (id == null)
                 return BadRequest();
 
-            var employee = employeeServices.GetEmployeeById(id.Value);
-
-            if (employee is null)
+            var employee = await employeeServices.GetEmployeeById(id.Value);
+            if (employee == null)
                 return NotFound();
 
-            var MappedEmployee = new UpdatedEmployeeDto()
+            var mappedEmployee = new UpdatedEmployeeDto
             {
                 Id = employee.Id,
                 Name = employee.Name,
@@ -105,85 +90,70 @@ namespace IKEA.PLDemo3.Controllers
                 Email = employee.Email,
                 Address = employee.Address,
                 PhoneNumber = employee.PhoneNumber,
-
                 HiringDate = employee.HiringDate,
                 IsActive = employee.IsActive,
                 Gender = employee.Gender,
                 EmployeeType = employee.EmployeeType,
-
+                ImageName = employee.ImageName
             };
-            return View(MappedEmployee);
 
+            return View(mappedEmployee);
         }
+
         [HttpPost]
-        public IActionResult Edit(UpdatedEmployeeDto employeeDto)
+        public async Task<IActionResult> Edit(UpdatedEmployeeDto employeeDto)
         {
             if (!ModelState.IsValid)
                 return View(employeeDto);
 
-            var Message = string.Empty;
-
             try
             {
-
-
-                var Result = employeeServices.UpdateEmployee(employeeDto);
-                if (Result > 0)
+                var result = await employeeServices.UpdateEmployee(employeeDto);
+                if (result > 0)
                     return RedirectToAction(nameof(Index));
 
-                Message = "Department is not Created";
-                ModelState.AddModelError(string.Empty, Message);
+                ModelState.AddModelError(string.Empty, "Employee is not updated");
                 return View(employeeDto);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, ex.Message);
-                Message = environment.IsDevelopment() ? ex.Message : "Error";
-                ModelState.AddModelError(string.Empty, Message);
+                ModelState.AddModelError(string.Empty, environment.IsDevelopment() ? ex.Message : "An error occurred");
                 return View(employeeDto);
             }
         }
 
-        #endregion
-        #region Delete
         [HttpGet]
-
         public IActionResult Delete(int? id)
         {
-            if (id is null)
+            if (id == null)
                 return BadRequest();
 
             var employee = employeeServices.GetEmployeeById(id.Value);
-
-            if (employee is null)
+            if (employee == null)
                 return NotFound();
 
             return View(employee);
         }
+
         [HttpPost]
-        public IActionResult Delete(int EmpId)
+        public async Task<IActionResult> Delete(int empId)
         {
-            var Message = string.Empty;
             try
             {
-                var IsDeleted = employeeServices.DeleteEmployee(EmpId);
-
-                if (IsDeleted)
+                var isDeleted = await employeeServices.DeleteEmployee(empId);
+                if (isDeleted)
                     return RedirectToAction(nameof(Index));
 
-                Message = "Department is Not Deleted";
+                ModelState.AddModelError(string.Empty, "Employee is not deleted");
             }
             catch (Exception ex)
             {
-                logger?.LogError(ex, ex.Message);
-                Message = environment.IsDevelopment() ? ex.Message : "An error has benn occured";
-
+                logger.LogError(ex, ex.Message);
+                ModelState.AddModelError(string.Empty, environment.IsDevelopment() ? ex.Message : "An error occurred");
             }
-            ModelState.AddModelError(string.Empty, Message);
-            return RedirectToAction(nameof(Delete), new { id = EmpId });
+
+            return RedirectToAction(nameof(Delete), new { id = empId });
         }
-
-
-        #endregion
     }
 }
